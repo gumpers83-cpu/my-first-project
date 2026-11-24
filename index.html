@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang='ru'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Шторы — замеры, расчёт ткани, смета</title>
+<style>
+:root{--navy:#1f4e79;--blue:#2e75b6;--bg:#f3f6fa;--card:#fff;--line:#dbe4ef;--yellow:#fff4ce;--green:#e7f1e3;--muted:#6b7a8d;--red:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#1c2a38;font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,#1f4e79,#2e75b6);color:#fff;padding:20px 24px 18px}
+header h1{margin:0 0 4px;font-size:22px;font-weight:650}
+header p{margin:0;opacity:.86;font-size:13px}
+.wrap{padding:0 24px 40px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:16px 0 4px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(20,50,80,.05)}
+.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.kpi .value{font-size:21px;font-weight:700;margin-top:3px;color:var(--navy)}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:14px 0 6px}
+.btn{border:1px solid var(--line);background:#fff;color:var(--navy);padding:8px 12px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--blue);background:#f0f6fc}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#1f5f9e}
+.btn.ghost{background:transparent;border-style:dashed}
+.btn.danger{color:var(--red)}
+.btn.mini{padding:4px 8px;font-size:11px;border-radius:7px}
+.selx{border:1px solid var(--line);background:#fff;color:var(--navy);padding:8px 9px;border-radius:9px;font-size:12.5px;font-weight:600}
+.spacer{flex:1}
+.saved{font-size:11.5px;color:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 14px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tab{border:0;background:#e8eef6;color:var(--navy);padding:9px 15px;border-radius:9px;font-weight:600;font-size:13px;cursor:pointer}
+.tab.active{background:var(--navy);color:#fff}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(20,50,80,.05)}
+.card h2{margin:0 0 6px;font-size:15px;color:var(--navy)}
+.card .hint{color:var(--muted);font-size:12px;margin:0 0 10px}
+.grid{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff;max-height:68vh}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;min-width:1500px}
+th{background:var(--navy);color:#fff;font-weight:600;text-align:center;padding:7px 6px;position:sticky;top:0;z-index:3;line-height:1.25;border-right:1px solid rgba(255,255,255,.12)}
+td{border-bottom:1px solid var(--line);border-right:1px solid #eef2f7;padding:3px 5px;vertical-align:middle}
+tr:nth-child(even) td{background:#fafcff}
+th:first-child,td:first-child{position:sticky;left:0;z-index:2;background:#fff}
+th:first-child{z-index:4;background:var(--navy)}
+tr:nth-child(even) td:first-child{background:#fafcff}
+input,select{width:100%;min-width:56px;border:1px solid #e3d9a8;background:var(--yellow);border-radius:6px;padding:5px 6px;font:inherit;font-size:12px;color:#243343}
+select{min-width:100px}
+input:focus,select:focus{outline:2px solid var(--blue);background:#fff}
+input[type=number]{text-align:right}
+.out{display:inline-block;min-width:42px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:#1c6b3f;background:var(--green);border-radius:6px;padding:4px 6px}
+.out.txt{text-align:left;font-weight:500;color:#33475c}
+tr.total td{background:var(--navy)!important;color:#fff;font-weight:700;position:static}
+tr.total .out{background:rgba(255,255,255,.16);color:#fff}
+.banner{border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:12px}
+.banner.ok{background:#e7f1e3;color:#256b3f;border:1px solid #bfe0c6}
+.banner.warn{background:#fff5dc;color:#8a6100;border:1px solid #ecd9a3}
+.params{display:flex;gap:14px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
+.param{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted)}
+.param input{width:110px}
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-top:10px}
+.sumitem{background:#f7fafd;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:11.5px;color:var(--muted)}
+.sumitem b{display:block;font-size:18px;color:var(--navy);margin-top:2px}
+.advice{background:#f0f6fc;border-left:3px solid var(--blue);padding:9px 12px;font-size:12.5px;margin-top:10px;border-radius:0 8px 8px 0}
+.ref{width:100%;border-collapse:collapse;min-width:0;font-size:13px}
+.ref th{position:static;background:var(--blue);text-align:left}
+.ref td,.ref th{border:1px solid var(--line);padding:7px 9px;text-align:left}
+.ref td:first-child{position:static;background:#fff}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;margin:6px 0 12px}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px;border:1px solid #d5dde7}
+#toast{position:fixed;right:18px;bottom:18px;background:#1f4e79;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:.25s;z-index:99}
+#toast.show{opacity:1}
+footer{color:var(--muted);font-size:11.5px;padding:8px 24px 30px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.wcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(20,50,80,.05)}
+.wcard h3{margin:0 0 4px;font-size:13px;color:var(--navy)}
+.wcard .meta{font-size:11.5px;color:var(--muted);margin-bottom:8px}
+.wcard img{width:100%;height:175px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.wcard .ph{height:175px;display:flex;align-items:center;justify-content:center;background:#f4f8fc;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:12px;text-align:center;padding:10px;line-height:1.5}
+.wcard textarea{width:100%;min-height:76px;resize:vertical;border:1px solid #e3d9a8;background:var(--yellow);border-radius:7px;padding:7px 8px;font:inherit;font-size:12px;color:#243343;margin-top:9px}
+.wcard textarea:focus{outline:2px solid var(--blue);background:#fff}
+.wcard .btnrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+@media (max-width:700px){header{padding:16px}.wrap{padding:0 12px 30px}.kpi .value{font-size:18px}.btn{padding:7px 9px;font-size:11.5px}}
+@media print{.toolbar,.tabs,.btn,#toast{display:none!important}.panel{display:block!important}.grid{max-height:none;overflow:visible}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+ <h1>Шторы · замеры, расчёт ткани и смета</h1>
+ <p>Онлайн-калькулятор: вводите размеры окон — метраж, фурнитура и стоимость считаются сразу. Данные сохраняются в этом браузере.</p>
+</header>
+<div class='wrap'>
+ <div class='kpis' id='kpis'></div>
+ <div class='toolbar'>
+  <button class='btn primary' data-act='add-meas'>+ Окно</button>
+  <button class='btn' data-act='add-calc'>+ Слой штор</button>
+  <button class='btn' data-act='add-balc'>+ Секция</button>
+  <button class='btn' data-act='add-blind'>+ Рим / жалюзи</button>
+  <span class='spacer'></span>
+  <select class='selx' id='exportWhat'>
+   <option value='calc'>Экспорт: расчёт + смета</option>
+   <option value='meas'>Экспорт: замеры</option>
+   <option value='balc'>Экспорт: секции</option>
+   <option value='blind'>Экспорт: римские / жалюзи</option>
+  </select>
+  <button class='btn' data-act='export-csv'>Скачать CSV</button>
+  <button class='btn' data-act='export-json'>Сохранить проект</button>
+  <button class='btn' data-act='import-json'>Загрузить проект</button>
+  <button class='btn' data-act='download-html'>Скачать приложение</button>
+  <button class='btn ghost' data-act='print'>Печать</button>
+  <button class='btn danger' data-act='clear-example'>Убрать пример</button>
+  <button class='btn danger' data-act='reset'>Сбросить всё</button>
+  <span class='saved' id='saved'>Сохранено автоматически</span>
+ </div>
+ <input type='file' id='fileInput' accept='.json,application/json' style='display:none'>
+ <input type='file' id='photoInput' accept='image/*' style='display:none'>
+ <div class='tabs' id='tabs'>
+  <button class='tab active' data-tab='meas'>Замеры</button>
+  <button class='tab' data-tab='calc'>Расчёт ткани</button>
+  <button class='tab' data-tab='balc'>Балкон и панорама</button>
+  <button class='tab' data-tab='blind'>Римские, рулонные, жалюзи</button>
+  <button class='tab' data-tab='media'>Описания и фото</button>
+  <button class='tab' data-tab='est'>Смета</button>
+  <button class='tab' data-tab='ref'>Шпаргалка и инструкция</button>
+ </div>
+ <div id='banner'></div>
+ <section class='panel active' id='panel-meas'></section>
+ <section class='panel' id='panel-calc'></section>
+ <section class='panel' id='panel-balc'></section>
+ <section class='panel' id='panel-blind'></section>
+ <section class='panel' id='panel-media'></section>
+ <section class='panel' id='panel-est'></section>
+ <section class='panel' id='panel-ref'></section>
+
+
+</div>
+<div id='toast'></div>
+<footer>Все данные хранятся только в вашем браузере (localStorage) и никуда не отправляются. Приложение — один самодостаточный HTML-файл: его можно скачать и выложить на любой статический хостинг.</footer>
+<script>
+const STORE='shtory_app_v1';
+const DQ=String.fromCharCode(34);
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');
+const uid=()=> 'r'+Math.random().toString(36).slice(2,9);
+const has=v=>v!==''&&v!==null&&v!==undefined;
+const num=(v,d=0)=>{const n=parseFloat(String(v??'').replace(',','.').replace(/\s/g,''));return Number.isFinite(n)?n:d;};
+const fmt=(n,d=0)=>new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}).format(Number.isFinite(n)?n:0);
+const money=n=>fmt(n,0)+' ₽';
+const $=s=>document.querySelector(s);
+
+const OPT={
+ window:['створчатое','панорамное','балконный блок','раздвижное','эркер','мансардное','арочное','другое'],
+ cornice:['настенный','потолочный','скрытый (ниша)','струна','профиль / рейка'],
+ length:['до пола (-2 см)','в пол (+2 см)','до подоконника (+2 см)','ниже подоконника (+12 см)','своя'],
+ yesno:['да','нет'],
+ curtain:['тюль','портьера','комбинированные','блэкаут','лён','римская / рулонная'],
+ mount:['люверсы','кулиска','петли','шторная лента','крючки','гофре','бантовые складки','зажимы'],
+ coeff:[1.5,2,2.5,3],
+ roll:[140,280,300],
+ secType:['глухая','поворотная створка','откидная','раздвижная','балконная дверь','фрамуга','простенок','угловая'],
+ side:['--','слева','справа','вверх','не открывается'],
+ secNum:[1,2,3,4,5,6,7,8],
+ hardware:['шторная лента','люверсы','крючки','утяжелитель','тесьма','кольца','липучка'],
+ kind:['римская','рулонная','жалюзи вертикальные','жалюзи горизонтальные'],
+ mountKind:['в проём','на проём (стена)','на потолок'],
+ priceUnit:['₽/м²','₽/м погонный','₽/шт']
+};
+
+function seed(){
+ return {
+  example:true,
+  params:{overhang:20,join:5,coeff:2},
+  meas:[{id:'m1',num:1,room:'Гостиная',type:'панорамное',openingW:260,openingH:220,frameW:250,frameH:210,sill:85,ceiling:260,corniceDrop:12,corniceType:'потолочный',overhang:25,corniceFact:'',corniceHeightFact:'',lengthType:'до пола (-2 см)',customHeight:'',sections:3,door:'да',note:'ПРИМЕР: радиатор под окном',description:'ПРИМЕР: панорамное окно в гостиной, радиатор под подоконником, справа диван. Откосы 20 см, карниз скрытый.',photo:''}],
+  calc:[{id:'c1',windowNum:1,curtainType:'портьера',mount:'шторная лента',coeff:2,topAllow:8,bottomAllow:12,sideAllow:4,rollW:280,rapport:0,lining:'нет',hardwareType:'шторная лента',note:'ПРИМЕР — замените',article:'ПРИМЕР: арт. 1142',priceFabric:890,priceLining:250,hardwareName:'Лента + утяжелитель',hardwareQty:6.2,hardwarePrice:120,labor:2500}],
+  balc:[{id:'b1',windowNum:1,secNum:1,secType:'глухая',w:90,h:210,side:'не открывается',note:'ПРИМЕР: левая створка'},{id:'b2',windowNum:1,secNum:2,secType:'балконная дверь',w:80,h:210,side:'справа',note:'ПРИМЕР: отдельное полотно у двери'},{id:'b3',windowNum:1,secNum:3,secType:'глухая',w:90,h:210,side:'не открывается',note:'ПРИМЕР: правая створка'}],
+  blind:[
+   {id:'bl1',windowNum:1,kind:'римская',mountKind:'в проём',w:'',h:'',gap:2,qty:1,step:30,sideAllow:4,topAllow:8,bottomAllow:10,rollW:280,priceUnit:'₽/м погонный',price:890,mechanism:1200,labor:1500,note:'ПРИМЕР: римская'},
+   {id:'bl2',windowNum:1,kind:'рулонная',mountKind:'в проём',w:'',h:'',gap:2,qty:1,step:25,sideAllow:2,topAllow:5,bottomAllow:20,rollW:280,priceUnit:'₽/м²',price:2100,mechanism:900,labor:600,note:'ПРИМЕР: рулонная'},
+   {id:'bl3',windowNum:1,kind:'жалюзи вертикальные',mountKind:'на проём (стена)',w:'',h:'',gap:10,qty:1,step:10,sideAllow:0,topAllow:0,bottomAllow:0,rollW:280,priceUnit:'₽/м²',price:1500,mechanism:700,labor:500,note:'ПРИМЕР: вертикальные'},
+   {id:'bl4',windowNum:1,kind:'жалюзи горизонтальные',mountKind:'в проём',w:'',h:'',gap:1,qty:1,step:5,sideAllow:0,topAllow:0,bottomAllow:0,rollW:280,priceUnit:'₽/м²',price:1900,mechanism:800,labor:500,note:'ПРИМЕР: горизонтальные'}
+  ]
+ };
+}
+function load(){try{const s=localStorage.getItem(STORE);return s?JSON.parse(s):null;}catch(e){return null;}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(state));$('#saved').textContent='Сохранено ' + new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});}catch(e){$('#saved').textContent='Мало места в браузере — сохраните проект в JSON';}}
+function normalize(s){
+ s=s&&typeof s==='object'?s:{};
+ s.meas=Array.isArray(s.meas)?s.meas:[];
+ s.calc=Array.isArray(s.calc)?s.calc:[];
+ s.balc=Array.isArray(s.balc)?s.balc:[];
+ s.example=!!s.example;
+ s.blind=Array.isArray(s.blind)?s.blind:(s.example?seed().blind:[]);
+ s.params=Object.assign({overhang:20,join:5,coeff:2},s.params||{});
+ [].concat(s.meas,s.calc,s.balc,s.blind).forEach(r=>{if(!r.id)r.id=uid();});
+ return s;
+}
+let state=normalize(load()||seed());
+let activeTab='meas';
+let balcWindow=state.meas.length?String(state.meas[0].num):'';
+let lastNums='__init__';
+
+
+function derivedMeas(m){
+ const over=has(m.overhang)?num(m.overhang):num(state.params.overhang,20);
+ const rec=has(m.openingW)?num(m.openingW)+2*over:null;
+ const cw=has(m.corniceFact)?num(m.corniceFact):rec;
+ const recH=(has(m.ceiling)&&has(m.corniceDrop))?num(m.ceiling)-num(m.corniceDrop):null;
+ const ch=has(m.corniceHeightFact)?num(m.corniceHeightFact):recH;
+ let curtain=null;
+ if(ch!==null){
+  const sill=has(m.sill)?num(m.sill):null;
+  switch(m.lengthType){
+   case 'до пола (-2 см)':curtain=ch-2;break;
+   case 'в пол (+2 см)':curtain=ch+2;break;
+   case 'до подоконника (+2 см)':curtain=sill!==null?ch-sill+2:null;break;
+   case 'ниже подоконника (+12 см)':curtain=sill!==null?ch-sill+12:null;break;
+   case 'своя':curtain=has(m.customHeight)?num(m.customHeight):null;break;
+   default:curtain=null;
+  }
+ }
+ return {corniceRec:rec,corniceW:cw,corniceHRec:recH,corniceH:ch,curtainH:curtain,photoStatus:m.photo?'есть':'—'};
+}
+function derivedCalc(c){
+ const m=state.meas.find(x=>String(x.num)===String(c.windowNum));
+ const d=m?derivedMeas(m):null;
+ const corniceW=d&&d.corniceW!==null?d.corniceW:0;
+ const curtainH=d?d.curtainH:null;
+ const coeff=num(c.coeff,2);
+ const calcW=corniceW*coeff;
+ const finalW=calcW+2*num(c.sideAllow,4);
+ const finalH=curtainH!==null?curtainH+num(c.topAllow,8)+num(c.bottomAllow,12):null;
+ const rollW=num(c.rollW,280)||280;
+ const panels=finalW>0?Math.ceil(finalW/rollW):0;
+ const rapport=num(c.rapport,0);
+ const metrage=(panels>0&&finalH!==null)?(rapport>0?panels*Math.ceil(finalH/rapport)*rapport/100:panels*finalH/100):0;
+ const liningM=c.lining==='да'?metrage:0;
+ const tapeM=calcW>0?Math.ceil(calcW/100*10)/10:0;
+ const grommets=(c.mount==='люверсы'&&panels>0&&calcW>0)?panels*2*Math.ceil(Math.ceil((calcW/panels)/16)/2):0;
+ const costFabric=metrage*num(c.priceFabric,0);
+ const costLining=liningM*num(c.priceLining,0);
+ const costHardware=num(c.hardwareQty,0)*num(c.hardwarePrice,0);
+ const total=costFabric+costLining+costHardware+num(c.labor,0);
+ return {room:m?m.room:'',windowType:m?m.type:'',windowNum:c.windowNum,curtainType:c.curtainType,corniceW:corniceW||null,curtainH:curtainH,calcW:calcW||null,finalW:finalW||null,finalH:finalH,panels:panels,metrage:metrage,liningM:liningM,tapeM:tapeM,grommets:grommets,costFabric:costFabric,costLining:costLining,costHardware:costHardware,total:total};
+}
+function derivedBalc(b){
+ const join=num(state.params.join,5),coeff=num(state.params.coeff,2);
+ const w=has(b.w)?num(b.w):null;
+ const ready=w!==null?w+2*join:null;
+ return {readyW:ready,fabricW:ready!==null?ready*coeff:null};
+}
+function balcSummary(win){
+ const rows=state.balc.filter(b=>String(b.windowNum)===String(win));
+ const totalW=rows.reduce((s,b)=>s+(has(b.w)?num(b.w):0),0);
+ const door=rows.some(b=>b.secType==='балконная дверь');
+ const cornice=totalW+2*num(state.params.overhang,20);
+ const fabric=cornice*num(state.params.coeff,2);
+ const panels=fabric>0?Math.ceil(fabric/280):0;
+ const advice=door?'У двери сделайте отдельное полотно, стык — по границе секции. Учтите ручку и радиатор.':'Стыкуйте полотна по границам секций, швы прячьте в складку. При панорамном остеклении удобнее скрытый потолочный карниз.';
+ return {totalW:totalW,sections:rows.length,cornice:cornice,fabric:fabric,panels:panels,door:door?'да':'нет',advice:advice};
+}
+
+function derivedBlind(b){
+ const m=state.meas.find(x=>String(x.num)===String(b.windowNum));
+ const gap=num(b.gap,0);
+ let recW=null,recH=null;
+ if(m){
+  const ow=has(m.openingW)?num(m.openingW):null;
+  const oh=has(m.openingH)?num(m.openingH):null;
+  const sill=has(m.sill)?num(m.sill):null;
+  const ceil=has(m.ceiling)?num(m.ceiling):null;
+  if(b.mountKind==='на потолок'){
+   recW=ow!==null?ow+2*gap:null;
+   recH=(ceil!==null&&sill!==null)?ceil-sill+gap:null;
+  }else if(b.mountKind==='в проём'){
+   recW=ow!==null?ow-2*gap:null;
+   recH=oh!==null?oh-gap:null;
+  }else{
+   recW=ow!==null?ow+2*gap:null;
+   recH=oh!==null?oh+2*gap:null;
+  }
+ }
+ const w=has(b.w)?num(b.w):(recW!==null?recW:0);
+ const h=has(b.h)?num(b.h):(recH!==null?recH:0);
+ const qty=Math.max(1,num(b.qty,1));
+ const step=num(b.step,25)||25;
+ const sideAllow=num(b.sideAllow,0),topAllow=num(b.topAllow,0),bottomAllow=num(b.bottomAllow,0);
+ const fabric=!(b.kind==='жалюзи вертикальные'||b.kind==='жалюзи горизонтальные');
+ const fabricW=w+2*sideAllow;
+ let fabricH=h+topAllow+bottomAllow,count=0,cordM=0;
+ if(b.kind==='римская'){
+  const folds=Math.max(0,Math.ceil(h/step)-1);
+  count=folds*qty;
+  fabricH=h+topAllow+bottomAllow+folds*2;
+  cordM=qty*2*(h+w/2)/100;
+ }else if(b.kind==='рулонная'){
+  cordM=qty*1.5*h/100;
+ }else if(b.kind==='жалюзи вертикальные'){
+  count=Math.ceil(w/step)*qty;
+  fabricH=0;
+ }else{
+  count=Math.ceil(h/step)*qty;
+  fabricH=0;
+ }
+ const rollW=num(b.rollW,280)||280;
+ const panels=fabric?Math.ceil(fabricW/rollW)*qty:0;
+ const fabricM=fabric?panels*fabricH/100:0;
+ const area=qty*(w/100)*(h/100);
+ let materialCost=0;
+ if(b.priceUnit==='₽/м²')materialCost=area*num(b.price,0);
+ else if(b.priceUnit==='₽/м погонный')materialCost=fabricM*num(b.price,0);
+ else materialCost=qty*num(b.price,0);
+ const mechanismCost=qty*num(b.mechanism,0);
+ const laborCost=qty*num(b.labor,0);
+ const total=materialCost+mechanismCost+laborCost;
+ return {room:m?m.room:'',recW:recW,recH:recH,w:w,h:h,area:area,fabricW:fabric?fabricW:null,fabricH:fabric?fabricH:null,fabricM:fabric?fabricM:null,panels:panels,count:count,cordM:fabric?cordM:null,materialCost:materialCost,mechanismCost:mechanismCost,laborCost:laborCost,total:total};
+}
+
+const MONEY_F=new Set(['costFabric','costLining','costHardware','total','gFabric','gLining','gHardware','gLabor','gTotal','materialCost','mechanismCost','laborCost','bMat','bMech','bLabor','bTotal']);
+const DEC2=new Set(['metrage','liningM','tapeM','gMet','gLiningM','area','fabricM','cordM','bArea','bFabric']);
+
+function formatOut(f,v){
+ if(v===null||v===undefined||v==='')return '—';
+ if(typeof v==='string')return v;
+ if(MONEY_F.has(f))return money(v);
+ return fmt(v,DEC2.has(f)?2:0);
+}
+
+function inp(t,r,f,type='text',extra=''){
+ return `<input type='${type}' data-t='${t}' data-id='${r.id}' data-f='${f}' value='${esc(r[f]??'')}' ${extra}>`;
+}
+function sel(t,r,f,opts){
+ const cur=String(r[f]??'');
+ return `<select data-t='${t}' data-id='${r.id}' data-f='${f}'>${opts.map(o=>`<option value='${esc(o)}' ${String(o)===cur?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+}
+function winOptions(){
+ return [...new Set(state.meas.map(m=>String(m.num)).filter(Boolean))].sort((a,b)=>num(a)-num(b));
+}
+function winSel(t,r,f){
+ const cur=String(r[f]??''),nums=winOptions();
+ return `<select data-t='${t}' data-id='${r.id}' data-f='${f}'><option value=''>—</option>${nums.map(n=>`<option value='${esc(n)}' ${n===cur?'selected':''}>${esc(n)}</option>`).join('')}</select>`;
+}
+function out(id,f,cls=''){return `<span class='out ${cls}' data-out='${id}:${f}'>—</span>`;}
+function hdr(a){return '<tr>'+a.map(h=>`<th>${h}</th>`).join('')+'</tr>';}
+function emptyRow(n){return `<tr><td colspan='${n}' style='padding:18px;text-align:center;color:#6b7a8d'>Пока нет строк — нажмите кнопку добавления выше</td></tr>`;}
+function delBtn(t,id){return `<button class='btn mini danger' data-act='del' data-t='${t}' data-id='${id}'>✕</button>`;}
+
+function renderMeas(){
+ const H=['№ окна','Комната','Тип окна','Ширина проёма, см','Высота проёма, см','Ширина рамы, см','Высота рамы, см','От пола до подоконника, см','Высота потолка, см','От потолка до карниза, см','Тип карниза','Выступ с каждой стороны, см','Карниз факт, см','Рекоменд. карниз, см','Карниз для расчёта, см','Высота карниза факт, см','Высота карниза для расчёта, см','Длина шторы','Своя высота, см','Высота шторы для расчёта, см','Секций','Балконная дверь','Примечания','Описание окна','Фото',''];
+ const rows=state.meas.map(m=>`<tr>
+ <td>${inp('meas',m,'num','number','min=1 step=1')}</td>
+ <td>${inp('meas',m,'room')}</td>
+ <td>${sel('meas',m,'type',OPT.window)}</td>
+ <td>${inp('meas',m,'openingW','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'openingH','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'frameW','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'frameH','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'sill','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'ceiling','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'corniceDrop','number','step=any min=0')}</td>
+ <td>${sel('meas',m,'corniceType',OPT.cornice)}</td>
+ <td>${inp('meas',m,'overhang','number','step=any min=0')}</td>
+ <td>${inp('meas',m,'corniceFact','number','step=any min=0')}</td>
+ <td>${out(m.id,'corniceRec')}</td>
+ <td>${out(m.id,'corniceW')}</td>
+ <td>${inp('meas',m,'corniceHeightFact','number','step=any min=0')}</td>
+ <td>${out(m.id,'corniceH')}</td>
+ <td>${sel('meas',m,'lengthType',OPT.length)}</td>
+ <td>${inp('meas',m,'customHeight','number','step=any min=0')}</td>
+ <td>${out(m.id,'curtainH')}</td>
+ <td>${inp('meas',m,'sections','number','step=1 min=0')}</td>
+ <td>${sel('meas',m,'door',OPT.yesno)}</td>
+ <td>${inp('meas',m,'note')}</td>
+ <td>${inp('meas',m,'description')}</td>
+ <td>${out(m.id,'photoStatus','txt')}</td>
+ <td>${delBtn('meas',m.id)}</td></tr>`).join('');
+ $('#panel-meas').innerHTML=`<div class='card'><h2>Замеры окон</h2><p class='hint'>Одно окно = одна строка. Жёлтые поля — ввод, зелёные считаются сами. Все размеры в сантиметрах. «Карниз факт» и «Высота карниза факт» перекрывают автоматический расчёт, если карниз уже стоит.</p><div class='grid'><table><thead>${hdr(H)}</thead><tbody>${rows||emptyRow(H.length)}</tbody></table></div></div>`;
+}
+
+function renderCalc(){
+ const H=['№ окна','Комната','Тип штор','Крепление','Коэф. сборки','Ширина карниза, см','Высота шторы, см','Расч. ширина ткани, см','Припуск верх, см','Припуск низ, см','Припуск бок на сторону, см','Итог. ширина, см','Итог. высота, см','Ширина рулона, см','Раппорт, см','Кол-во полотен','Метраж ткани, м','Подкладка','Подкладка, м','Фурнитура','Лента / тесьма, м','Люверсы, шт','Примечания',''];
+ const rows=state.calc.map(c=>`<tr>
+ <td>${winSel('calc',c,'windowNum')}</td>
+ <td>${out(c.id,'room','txt')}</td>
+ <td>${sel('calc',c,'curtainType',OPT.curtain)}</td>
+ <td>${sel('calc',c,'mount',OPT.mount)}</td>
+ <td>${sel('calc',c,'coeff',OPT.coeff)}</td>
+ <td>${out(c.id,'corniceW')}</td>
+ <td>${out(c.id,'curtainH')}</td>
+ <td>${out(c.id,'calcW')}</td>
+ <td>${inp('calc',c,'topAllow','number','step=any min=0')}</td>
+ <td>${inp('calc',c,'bottomAllow','number','step=any min=0')}</td>
+ <td>${inp('calc',c,'sideAllow','number','step=any min=0')}</td>
+ <td>${out(c.id,'finalW')}</td>
+ <td>${out(c.id,'finalH')}</td>
+ <td>${sel('calc',c,'rollW',OPT.roll)}</td>
+ <td>${inp('calc',c,'rapport','number','step=any min=0')}</td>
+ <td>${out(c.id,'panels')}</td>
+ <td>${out(c.id,'metrage')}</td>
+ <td>${sel('calc',c,'lining',OPT.yesno)}</td>
+ <td>${out(c.id,'liningM')}</td>
+ <td>${sel('calc',c,'hardwareType',OPT.hardware)}</td>
+ <td>${out(c.id,'tapeM')}</td>
+ <td>${out(c.id,'grommets')}</td>
+ <td>${inp('calc',c,'note')}</td>
+ <td><button class='btn mini' data-act='dup' data-t='calc' data-id='${c.id}'>+ Слой</button> ${delBtn('calc',c.id)}</td></tr>`).join('');
+ $('#panel-calc').innerHTML=`<div class='card'><h2>Расчёт ткани и фурнитуры</h2><p class='hint'>Выберите № окна — размеры подтянутся из «Замеров». Для тюля и портьеры сделайте две строки с одним номером окна (кнопка «+ Слой» дублирует строку). Раппорт больше нуля округляет высоту полотна вверх до целого шага рисунка.</p><div class='grid'><table><thead>${hdr(H)}</thead><tbody>${rows||emptyRow(H.length)}</tbody></table></div></div>`;
+}
+
+function renderBalc(){
+ const p=f=>`<label class='param'>${({'overhang':'Выступ карниза, см (с каждой стороны)','join':'Заход на секцию, см','coeff':'Коэффициент сборки'})[f]}<input type='number' step='any' data-t='params' data-f='${f}' value='${esc(state.params[f])}'></label>`;
+ const nums=winOptions();
+ const wsel=`<label class='param'>Окно для итога<select data-t='ui' data-id='ui' data-f='windowNum'><option value=''>—</option>${nums.map(n=>`<option value='${esc(n)}' ${n===String(balcWindow)?'selected':''}>${esc(n)}</option>`).join('')}</select></label>`;
+ const H=['№ окна','№ секции','Тип секции','Ширина секции, см','Высота секции, см','Сторона открывания','Готовое полотно, см','Ткань со сборкой, см','Примечание / схема',''];
+ const rows=state.balc.map(b=>`<tr>
+ <td>${winSel('balc',b,'windowNum')}</td>
+ <td>${sel('balc',b,'secNum',OPT.secNum)}</td>
+ <td>${sel('balc',b,'secType',OPT.secType)}</td>
+ <td>${inp('balc',b,'w','number','step=any min=0')}</td>
+ <td>${inp('balc',b,'h','number','step=any min=0')}</td>
+ <td>${sel('balc',b,'side',OPT.side)}</td>
+ <td>${out(b.id,'readyW')}</td>
+ <td>${out(b.id,'fabricW')}</td>
+ <td>${inp('balc',b,'note')}</td>
+ <td>${delBtn('balc',b.id)}</td></tr>`).join('');
+ $('#panel-balc').innerHTML=`<div class='card'><h2>Балконный блок и панорамное остекление</h2><p class='hint'>Разбейте блок на секции: стыки полотен совмещайте с границами створок, а у балконной двери оставляйте отдельное полотно.</p><div class='params'>${p('overhang')}${p('join')}${p('coeff')}${wsel}</div><div class='grid'><table><thead>${hdr(H)}</thead><tbody>${rows||emptyRow(H.length)}</tbody></table></div><div class='sumgrid'><div class='sumitem'>Суммарная ширина секций, см<b>${out('balc','totalW')}</b></div><div class='sumitem'>Кол-во секций<b>${out('balc','sections')}</b></div><div class='sumitem'>Рекоменд. карниз, см<b>${out('balc','cornice')}</b></div><div class='sumitem'>Ткань со сборкой, см<b>${out('balc','fabric')}</b></div><div class='sumitem'>Полотен при рулоне 280 см<b>${out('balc','panels')}</b></div><div class='sumitem'>Балконная дверь<b>${out('balc','door','txt')}</b></div></div><div class='advice' id='balcAdvice'>—</div></div>`;
+}
+
+function renderBlind(){
+ const H=['№ окна','Комната','Тип изделия','Монтаж','Ширина, см','Высота, см','Рекоменд. ширина, см','Рекоменд. высота, см','Зазор / перехлёст, см','Секций, шт','Шаг, см','Припуск бок, см','Припуск верх, см','Припуск низ, см','Рулон, см','Учёт цены','Цена, ₽','Площадь, м²','Ткань, м погонный','Ламелей / складок, шт','Шнур / цепочка, м','Материал, ₽','Механизм, ₽','Работа, ₽','Итого, ₽','Примечания',''];
+ const rows=state.blind.map(b=>`<tr>
+ <td>${winSel('blind',b,'windowNum')}</td>
+ <td>${out(b.id,'room','txt')}</td>
+ <td>${sel('blind',b,'kind',OPT.kind)}</td>
+ <td>${sel('blind',b,'mountKind',OPT.mountKind)}</td>
+ <td>${inp('blind',b,'w','number','step=any min=0')}</td>
+ <td>${inp('blind',b,'h','number','step=any min=0')}</td>
+ <td>${out(b.id,'recW')}</td>
+ <td>${out(b.id,'recH')}</td>
+ <td>${inp('blind',b,'gap','number','step=any min=0')}</td>
+ <td>${inp('blind',b,'qty','number','step=1 min=1')}</td>
+ <td>${inp('blind',b,'step','number','step=any min=1')}</td>
+ <td>${inp('blind',b,'sideAllow','number','step=any min=0')}</td>
+ <td>${inp('blind',b,'topAllow','number','step=any min=0')}</td>
+ <td>${inp('blind',b,'bottomAllow','number','step=any min=0')}</td>
+ <td>${sel('blind',b,'rollW',OPT.roll)}</td>
+ <td>${sel('blind',b,'priceUnit',OPT.priceUnit)}</td>
+ <td>${inp('blind',b,'price','number','step=any min=0')}</td>
+ <td>${out(b.id,'area')}</td>
+ <td>${out(b.id,'fabricM')}</td>
+ <td>${out(b.id,'count')}</td>
+ <td>${out(b.id,'cordM')}</td>
+ <td>${out(b.id,'materialCost')}</td>
+ <td>${inp('blind',b,'mechanism','number','step=any min=0')}</td>
+ <td>${inp('blind',b,'labor','number','step=any min=0')}</td>
+ <td>${out(b.id,'total')}</td>
+ <td>${inp('blind',b,'note')}</td>
+ <td><button class='btn mini' data-act='apply-rec' data-t='blind' data-id='${b.id}'>Размер ↓</button> ${delBtn('blind',b.id)}</td></tr>`).join('');
+ const td=v=>v?'<td>'+v+'</td>':'<td></td>';
+ const cells=[td(),td(),td(),td(),td(),td(),td(out('bgrand','bQty')),td(),td(),td(),td(),td(),td(),td(),td(out('bgrand','bArea')),td(out('bgrand','bFabric')),td(out('bgrand','bCount')),td(),td(out('bgrand','bMat')),td(out('bgrand','bMech')),td(out('bgrand','bLabor')),td(out('bgrand','bTotal')),td(),td()];
+ const total=`<tr class='total'><td colspan='3'>ИТОГО ПО ИЗДЕЛИЯМ</td>${cells.join('')}</tr>`;
+ $('#panel-blind').innerHTML=`<div class='card'><h2>Римские, рулонные шторы и жалюзи</h2><p class='hint'>Оставьте «Ширину» и «Высоту» пустыми — размеры возьмутся из «Замеров» с учётом монтажа; кнопка «Размер ↓» подставит рекомендуемые значения в поля. «Секций» — сколько одинаковых изделий на окно. Цена считается по м², погонному метру ткани или за штуку (выбор в столбце «Учёт цены»).</p><div class='grid'><table><thead>${hdr(H)}</thead><tbody>${rows||emptyRow(H.length)}${state.blind.length?total:''}</tbody></table></div><div class='sumgrid'><div class='sumitem'>Изделий, шт<b>${out('bgrand','bQty')}</b></div><div class='sumitem'>Площадь, м²<b>${out('bgrand','bArea')}</b></div><div class='sumitem'>Ткань, м<b>${out('bgrand','bFabric')}</b></div><div class='sumitem'>Ламелей / складок<b>${out('bgrand','bCount')}</b></div><div class='sumitem'>Материал, ₽<b>${out('bgrand','bMat')}</b></div><div class='sumitem'>Итого изделия, ₽<b>${out('bgrand','bTotal')}</b></div></div><div class='advice'>Римская: запас ткани по высоте на карманы под рейки, две нити шнура. Рулонная: +15–20 см на намотку вала, ширина полотна не больше ширины вала. Вертикальные жалюзи: ширина ламели 10 / 12,7 см, ламели считаем по ширине. Горизонтальные: шаг ламели 4,2 / 5 / 5,5 см, ламели считаем по высоте. При монтаже «в проём» размер уменьшается на зазор, «на проём» и «на потолок» — увеличивается на перехлёст.</div></div>`;
+}
+
+function renderEst(){
+ const H=['№ окна','Тип штор','Ткань / артикул','Метраж, м','Цена ткани, ₽/м','Стоимость ткани, ₽','Подкладка, м','Цена подкладки, ₽/м','Стоимость подкладки, ₽','Фурнитура','Кол-во, м/шт','Цена, ₽','Стоимость фурнитуры, ₽','Пошив, ₽','Итого, ₽',''];
+ const rows=state.calc.map(c=>`<tr>
+ <td>${out(c.id,'windowNum','txt')}</td>
+ <td>${out(c.id,'curtainType','txt')}</td>
+ <td>${inp('calc',c,'article')}</td>
+ <td>${out(c.id,'metrage')}</td>
+ <td>${inp('calc',c,'priceFabric','number','step=any min=0')}</td>
+ <td>${out(c.id,'costFabric')}</td>
+ <td>${out(c.id,'liningM')}</td>
+ <td>${inp('calc',c,'priceLining','number','step=any min=0')}</td>
+ <td>${out(c.id,'costLining')}</td>
+ <td>${inp('calc',c,'hardwareName')}</td>
+ <td>${inp('calc',c,'hardwareQty','number','step=any min=0')}</td>
+ <td>${inp('calc',c,'hardwarePrice','number','step=any min=0')}</td>
+ <td>${out(c.id,'costHardware')}</td>
+ <td>${inp('calc',c,'labor','number','step=any min=0')}</td>
+ <td>${out(c.id,'total')}</td>
+ <td><button class='btn mini' data-act='autofill' data-t='calc' data-id='${c.id}'>Подставить</button></td></tr>`).join('');
+ const total=`<tr class='total'><td colspan='3'>ИТОГО ПО ВСЕМ ОКНАМ</td><td>${out('grand','gMet')}</td><td></td><td>${out('grand','gFabric')}</td><td>${out('grand','gLiningM')}</td><td></td><td>${out('grand','gLining')}</td><td></td><td></td><td></td><td>${out('grand','gHardware')}</td><td>${out('grand','gLabor')}</td><td>${out('grand','gTotal')}</td><td></td></tr>`;
+ $('#panel-est').innerHTML=`<div class='card'><h2>Смета</h2><p class='hint'>Метраж подтягивается из расчёта. Кнопка «Подставить» заполняет количество фурнитуры из столбца «Лента / тесьма» (или из числа люверсов).</p><div class='grid'><table><thead>${hdr(H)}</thead><tbody>${rows||emptyRow(H.length)}${state.calc.length?total:''}</tbody></table></div></div>`;
+}
+
+function renderMedia(){
+ const cards=state.meas.map(m=>{
+  const size=(has(m.openingW)&&has(m.openingH))?num(m.openingW)+' × '+num(m.openingH)+' см':'размер не задан';
+  const photo=m.photo?`<img src='${esc(m.photo)}' alt='Фото окна'>`:`<div class='ph'>Фото не загружено<br>Нажмите «Загрузить фото»</div>`;
+  const del=m.photo?`<button class='btn mini danger' data-act='del-photo' data-t='meas' data-id='${m.id}'>Удалить фото</button>`:'';
+  return `<div class='wcard'>
+   <h3>Окно № ${esc(m.num)} · ${esc(m.room||'без названия')}</h3>
+   <div class='meta'>${esc(m.type||'')} · ${esc(size)}${m.photoName?' · '+esc(m.photoName):''}</div>
+   ${photo}
+   <textarea data-t='meas' data-id='${m.id}' data-f='description' placeholder='Опишите окно: откосы, батарея, сторона открывания, мебель рядом, пожелания к шторам…'>${esc(m.description||'')}</textarea>
+   <div class='btnrow'><button class='btn mini primary' data-act='add-photo' data-t='meas' data-id='${m.id}'>Загрузить фото</button>${del}</div>
+  </div>`;
+ }).join('');
+ const withPhoto=state.meas.filter(m=>m.photo).length;
+ $('#panel-media').innerHTML=`<div class='card'><h2>Описания и фото окон</h2><p class='hint'>Описание и снимок привязаны к номеру окна. Фото сжимается до 1200 px и сохраняется в браузере вместе с проектом (кнопка «Сохранить проект»). В CSV идёт только отметка о наличии фото, сами снимки — в JSON.</p><div class='banner ok'>Загружено фото: ${withPhoto} из ${state.meas.length} окон. Описание также доступно в столбце «Описание окна» на вкладке «Замеры».</div>${cards?`<div class='cards'>${cards}</div>`:`<div class='advice'>Окон пока нет — нажмите «+ Окно».</div>`}</div>`;
+}
+
+function renderRef(){
+ const coeff=[['Люверсы, кулиска, петли','1,5–2','Плотные ткани, минимум объёма'],['Шторная лента, крючки','2–2,5','Универсальный вариант'],['Тюль, органза, вуаль','2–2,5','Лёгкие ткани'],['Портьерная ткань средней плотности','2–2,5','Стандарт для гостиной и спальни'],['Плотные ткани, лён, блэкаут','1,5–2','Тяжёлое полотно, меньше складок'],['Гофре, бантовые складки','2,5–3','Максимальная драпировка']];
+ const allow=[['Верх под ленту / люверсы','5–10 см','Под люверсы обычно 8–10 см с укреплением'],['Низ, двойной подгиб','5–15 см','Для пола 10–15 см, можно с утяжелителем'],['Бока на каждую сторону','3–5 см','В приложении задаётся на одну сторону и умножается на 2'],['Выступ карниза за окно','20–40 см','С каждой стороны'],['Ширина рулона','140 / 280 / 300 см','Уточните у поставщика артикул'],['Люверсы','1 шт на 15–16 см','Чётное количество на каждое полотно']];
+ const forms=[['Расчётная ширина','ширина карниза × коэффициент сборки'],['Итоговая ширина','расчётная ширина + 2 × боковой припуск'],['Итоговая высота','высота шторы + верх + низ'],['Кол-во полотен','округление вверх (итоговая ширина / ширина рулона)'],['Метраж без раппорта','полотна × высота полотна / 100'],['Метраж с раппортом','полотна × округление вверх (высота / раппорт) × раппорт / 100']];
+ const blinds=[['Римская штора','Сборка 1,0–1,1; шаг складки 25–35 см','Верх 5–10 см, низ 5–10 см, плюс ~2 см на карман под каждую рейку; 2 шнура'],['Рулонная штора','Полотно = ширина + 2 × припуск','Высота = высота + 5 см сверху + 15–20 см на намотку вала; ткань не шире вала'],['Жалюзи вертикальные','Ширина ламели 89 / 127 мм (10 / 12,7 см)','Ламели = округление вверх (ширина / шаг); перехлёст около 10%'],['Жалюзи горизонтальные','Шаг ламели 16 / 25 / 50 мм','Ламели = округление вверх (высота / шаг); цена обычно за м²'],['Монтаж «в проём»','ширина − 2 × зазор; высота − зазор','Зазор обычно 1–2 см, ручка и откосы должны остаться свободными'],['Монтаж «на проём» / «на потолок»','ширина + 2 × перехлёст; высота + перехлёст','Перехлёст 5–10 см с каждой стороны'],['Учёт цены','₽/м² · ₽/м погонный · ₽/шт','Жалюзи удобнее считать за м², тканевые шторы — за погонный метр']];
+ const blindForms=[['Площадь, м²','секции × ширина × высота / 10 000'],['Высота полотна римской','высота + верх + низ + 2 см × число складок'],['Высота полотна рулонной','высота + верх + низ (низ 15–20 см на вал)'],['Ткань, м погонный','округление вверх (ширина полотна / рулон) × высота полотна / 100 × секции'],['Складки римской','(округление вверх (высота / шаг) − 1) × секции'],['Ламели вертикальных','округление вверх (ширина / шаг) × секции'],['Ламели горизонтальных','округление вверх (высота / шаг) × секции'],['Шнур римской','2 × (высота + ширина / 2) / 100 × секции'],['Цепочка рулонной','1,5 × высота / 100 × секции'],['Стоимость','материал + механизм × секции + работа × секции']];
+ const tbl=(head,rows)=>`<table class='ref'><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+ $('#panel-ref').innerHTML=`<div class='card'><h2>Как пользоваться</h2><div class='legend'><span><i class='swatch' style='background:#fff4ce'></i>жёлтое — вводите вы</span><span><i class='swatch' style='background:#e7f1e3'></i>зелёное — считается автоматически</span></div><p class='hint'>1. В «Замерах» создайте окно и внесите промеры. 2. В «Расчёте» выберите номер окна, тип штор и коэффициент. 3. Для тюля и портьеры добавьте вторую строку с тем же номером. 4. В «Смете» впишите цены. 5. Для балконного блока заполните «Секции». 6. Римские, рулонные и жалюзи считайте на отдельной вкладке: там свои припуски, шаг ламелей и единицы цены. 7. На вкладке «Описания и фото» добавьте описание и снимок каждого окна. Данные сохраняются сами; проект можно скачать в JSON и открыть на другом устройстве.</p></div><div class='card'><h2>Коэффициенты сборки</h2>${tbl(['Тип крепления / ткани','Коэффициент','Примечание'],coeff)}</div><div class='card'><h2>Припуски и ткань</h2>${tbl(['Параметр','Значение','Примечание'],allow)}</div><div class='card'><h2>Формулы для классических штор</h2>${tbl(['Показатель','Формула'],forms)}</div><div class='card'><h2>Римские, рулонные и жалюзи: шпаргалка</h2>${tbl(['Тип / параметр','Значение','Примечание'],blinds)}</div><div class='card'><h2>Формулы для римских, рулонных и жалюзи</h2>${tbl(['Показатель','Формула'],blindForms)}</div>`;
+}
+
+function checks(){
+ const msg=[];
+ state.meas.forEach(m=>{const d=derivedMeas(m);if(d.corniceH===null)msg.push('Окно № '+m.num+': не задана высота карниза от пола (нужны «Высота потолка» и «От потолка до карниза»).');});
+ state.calc.forEach(c=>{
+  if(!has(c.windowNum))msg.push('В одной из строк расчёта не выбран № окна.');
+  else if(!state.meas.some(m=>String(m.num)===String(c.windowNum)))msg.push('Окно № '+c.windowNum+' из расчёта отсутствует в «Замерах».');
+  const d=derivedCalc(c);
+  if(d.curtainH===null)msg.push('Не определена высота шторы ('+(c.curtainType||'строка')+', окно № '+c.windowNum+').');
+ });
+ state.blind.forEach(b=>{
+  if(!has(b.windowNum))msg.push('В блоке римских / жалюзи не выбран № окна.');
+  else if(!state.meas.some(m=>String(m.num)===String(b.windowNum)))msg.push('Окно № '+b.windowNum+' из блока римских / жалюзи отсутствует в «Замерах».');
+  const d=derivedBlind(b);
+  if(!d.w||!d.h)msg.push('Для изделия «'+b.kind+'» не заданы ширина или высота: заполните промеры окна либо поля Ширина / Высота.');
+  if(b.priceUnit==='₽/м погонный'&&(b.kind==='жалюзи вертикальные'||b.kind==='жалюзи горизонтальные'))msg.push('Для жалюзи обычно считают цену за м², а не за погонный метр ткани.');
+ });
+ return [...new Set(msg)].slice(0,4);
+}
+
+function refreshWinSelects(){
+ const nums=winOptions(),key=nums.join('|');
+ if(key===lastNums)return;
+ lastNums=key;
+ const html=['<option value=\'\'>—</option>'].concat(nums.map(n=>`<option value='${esc(n)}'>${esc(n)}</option>`)).join('');
+ document.querySelectorAll('select[data-f=windowNum]').forEach(s=>{const cur=s.value;s.innerHTML=html;s.value=cur;});
+}
+function refresh(){
+ const map={};
+ state.meas.forEach(m=>{const d=derivedMeas(m);for(const k in d)map[m.id+':'+k]=d[k];});
+ state.calc.forEach(c=>{const d=derivedCalc(c);for(const k in d)map[c.id+':'+k]=d[k];});
+ state.balc.forEach(b=>{const d=derivedBalc(b);for(const k in d)map[b.id+':'+k]=d[k];});
+ state.blind.forEach(b=>{const d=derivedBlind(b);for(const k in d)map[b.id+':'+k]=d[k];});
+ let gMet=0,gFabric=0,gLiningM=0,gLining=0,gHardware=0,gLabor=0,gTotal=0,gPanels=0;
+ state.calc.forEach(c=>{const d=derivedCalc(c);gMet+=d.metrage;gFabric+=d.costFabric;gLiningM+=d.liningM;gLining+=d.costLining;gHardware+=d.costHardware;gLabor+=num(c.labor,0);gTotal+=d.total;gPanels+=d.panels;});
+ map['grand:gMet']=gMet;map['grand:gFabric']=gFabric;map['grand:gLiningM']=gLiningM;map['grand:gLining']=gLining;map['grand:gHardware']=gHardware;map['grand:gLabor']=gLabor;map['grand:gTotal']=gTotal;
+ let bArea=0,bFabric=0,bCount=0,bMat=0,bMech=0,bLabor=0,bTotal=0,bQty=0;
+ state.blind.forEach(b=>{const d=derivedBlind(b);bArea+=d.area;bFabric+=(d.fabricM||0);bCount+=d.count;bMat+=d.materialCost;bMech+=d.mechanismCost;bLabor+=d.laborCost;bTotal+=d.total;bQty+=Math.max(1,num(b.qty,1));});
+ map['bgrand:bArea']=bArea;map['bgrand:bFabric']=bFabric;map['bgrand:bCount']=bCount;map['bgrand:bMat']=bMat;map['bgrand:bMech']=bMech;map['bgrand:bLabor']=bLabor;map['bgrand:bTotal']=bTotal;map['bgrand:bQty']=bQty;
+ const bs=balcSummary(balcWindow);
+ for(const k in bs)map['balc:'+k]=bs[k];
+ document.querySelectorAll('[data-out]').forEach(el=>{el.textContent=formatOut(el.dataset.out.split(':')[1],map[el.dataset.out]);});
+ if($('#balcAdvice'))$('#balcAdvice').textContent=bs.advice;
+ const windows=new Set(state.meas.map(m=>String(m.num)).filter(Boolean)).size;
+ $('#kpis').innerHTML=[['Окон',windows],['Ткани, м',fmt(gMet,2)],['Полотен',gPanels],['Слоёв штор',state.calc.length],['Шторы, ₽',fmt(gTotal,0)],['Рим / жалюзи, ₽',fmt(bTotal,0)],['ВСЕГО, ₽',fmt(gTotal+bTotal,0)]].map(p=>`<div class='kpi'><div class='label'>${p[0]}</div><div class='value'>${p[1]}</div></div>`).join('');
+ const msgs=checks();
+ $('#banner').innerHTML=msgs.length?`<div class='banner warn'><b>Проверьте заполнение:</b> ${msgs.map(esc).join(' ')}</div>`:`<div class='banner ok'>Данные заполнены, расчёт корректен. Строк: замеры ${state.meas.length}, расчёт ${state.calc.length}, секции ${state.balc.length}, римские / жалюзи ${state.blind.length}.</div>`;
+ refreshWinSelects();
+ save();
+}
+function render(){renderMeas();renderCalc();renderBalc();renderBlind();renderMedia();renderEst();renderRef();lastNums='__force__';refresh();}
+
+function switchTab(name){
+ activeTab=name;
+ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+ document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+name));
+}
+function setField(t,id,f,v){
+ if(t==='ui'){balcWindow=v;return;}
+ if(t==='params'){state.params[f]=v;return;}
+ const arr=state[t];if(!arr)return;
+ const r=arr.find(x=>x.id===id);if(!r)return;
+ r[f]=v;
+}
+function blankMeas(n){return {id:uid(),num:n,room:'',type:'створчатое',openingW:'',openingH:'',frameW:'',frameH:'',sill:'',ceiling:'',corniceDrop:'',corniceType:'настенный',overhang:'',corniceFact:'',corniceHeightFact:'',lengthType:'до пола (-2 см)',customHeight:'',sections:'',door:'нет',note:'',description:'',photo:''};}
+function blankCalc(n){return {id:uid(),windowNum:n,curtainType:'портьера',mount:'шторная лента',coeff:2,topAllow:8,bottomAllow:12,sideAllow:4,rollW:280,rapport:0,lining:'нет',hardwareType:'шторная лента',note:'',article:'',priceFabric:'',priceLining:'',hardwareName:'',hardwareQty:'',hardwarePrice:'',labor:''};}
+function blankBlind(n){return {id:uid(),windowNum:n,kind:'римская',mountKind:'в проём',w:'',h:'',gap:2,qty:1,step:30,sideAllow:4,topAllow:8,bottomAllow:10,rollW:280,priceUnit:'₽/м²',price:'',mechanism:'',labor:'',note:''};}
+function nextNum(){return state.meas.length?Math.max(...state.meas.map(m=>num(m.num,0)))+1:1;}
+function firstNum(){return state.meas.length?String(state.meas[0].num):'';}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},600);}
+function csvCell(v){if(typeof v==='number')return String(Math.round(v*100)/100).replace('.',',');return DQ+String(v??'').split(DQ).join(DQ+DQ)+DQ;}
+function exportCsv(){
+ let head=[],rows=[],name='';
+ const what=$('#exportWhat').value;
+ if(what==='calc'){
+  head=['№ окна','Комната','Тип штор','Крепление','Коэф. сборки','Ширина карниза, см','Высота шторы, см','Расч. ширина, см','Верх, см','Низ, см','Бок, см','Итог. ширина, см','Итог. высота, см','Рулон, см','Раппорт, см','Полотен','Метраж, м','Подкладка','Подкладка, м','Лента, м','Люверсы, шт','Артикул','Цена ткани, ₽/м','Ткань, ₽','Цена подкладки, ₽/м','Подкладка, ₽','Фурнитура','Кол-во','Цена, ₽','Фурнитура, ₽','Пошив, ₽','Итого, ₽'];
+  rows=state.calc.map(c=>{const d=derivedCalc(c);return [c.windowNum,d.room,c.curtainType,c.mount,c.coeff,d.corniceW,d.curtainH,d.calcW,c.topAllow,c.bottomAllow,c.sideAllow,d.finalW,d.finalH,c.rollW,c.rapport,d.panels,d.metrage,c.lining,d.liningM,d.tapeM,d.grommets,c.article,c.priceFabric,d.costFabric,c.priceLining,d.costLining,c.hardwareName,c.hardwareQty,c.hardwarePrice,d.costHardware,c.labor,d.total];});
+  name='Шторы_расчёт_смета.csv';
+ }else if(what==='meas'){
+  head=['№ окна','Комната','Тип окна','Ширина проёма, см','Высота проёма, см','Ширина рамы, см','Высота рамы, см','Подоконник, см','Потолок, см','От потолка до карниза, см','Тип карниза','Выступ, см','Карниз факт, см','Рекоменд. карниз, см','Карниз для расчёта, см','Высота карниза факт, см','Высота карниза, см','Длина шторы','Своя высота, см','Высота шторы, см','Секций','Балконная дверь','Примечания','Описание окна','Фото'];
+  rows=state.meas.map(m=>{const d=derivedMeas(m);return [m.num,m.room,m.type,m.openingW,m.openingH,m.frameW,m.frameH,m.sill,m.ceiling,m.corniceDrop,m.corniceType,m.overhang,m.corniceFact,d.corniceRec,d.corniceW,m.corniceHeightFact,d.corniceH,m.lengthType,m.customHeight,d.curtainH,m.sections,m.door,m.note,m.description,(m.photo?'есть':'нет')];});
+  name='Шторы_замеры.csv';
+ }else if(what==='blind'){
+  head=['№ окна','Комната','Тип изделия','Монтаж','Ширина, см','Высота, см','Рекоменд. ширина, см','Рекоменд. высота, см','Зазор / перехлёст, см','Секций','Шаг, см','Припуск бок, см','Припуск верх, см','Припуск низ, см','Рулон, см','Учёт цены','Цена, ₽','Площадь, м²','Ткань, м','Ламелей / складок','Шнур / цепочка, м','Материал, ₽','Механизм, ₽','Работа, ₽','Итого, ₽','Примечания'];
+  rows=state.blind.map(b=>{const d=derivedBlind(b);return [b.windowNum,d.room,b.kind,b.mountKind,d.w,d.h,d.recW,d.recH,b.gap,b.qty,b.step,b.sideAllow,b.topAllow,b.bottomAllow,b.rollW,b.priceUnit,b.price,d.area,d.fabricM,d.count,d.cordM,d.materialCost,b.mechanism,b.labor,d.total,b.note];});
+  name='Шторы_римские_жалюзи.csv';
+ }else{
+  head=['№ окна','№ секции','Тип секции','Ширина, см','Высота, см','Сторона','Готовое полотно, см','Ткань со сборкой, см','Примечание'];
+  rows=state.balc.map(b=>{const d=derivedBalc(b);return [b.windowNum,b.secNum,b.secType,b.w,b.h,b.side,d.readyW,d.fabricW,b.note];});
+  name='Шторы_секции.csv';
+ }
+ const csv='\uFEFF'+[head.map(csvCell).join(';')].concat(rows.map(r=>r.map(csvCell).join(';'))).join('\r\n');
+ download(new Blob([csv],{type:'text/csv;charset=utf-8'}),name);
+ toast('CSV скачан — откройте в Excel (разделитель «;»)');
+}
+function exportJson(){download(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),'Шторы_проект.json');toast('Проект сохранён в JSON');}
+function downloadHtml(){download(new Blob(['<!doctype html>\n'+document.documentElement.outerHTML],{type:'text/html;charset=utf-8'}),'shtory-app.html');toast('HTML скачан — можно выложить на хостинг');}
+
+document.addEventListener('input',onEdit);
+document.addEventListener('change',onEdit);
+function onEdit(e){
+ const el=e.target;
+ if(el.id==='fileInput'||el.id==='exportWhat'||el.id==='photoInput')return;
+ if(el.dataset&&el.dataset.f){setField(el.dataset.t,el.dataset.id,el.dataset.f,el.value);refresh();}
+}
+document.addEventListener('click',e=>{
+ const tab=e.target.closest('[data-tab]');
+ if(tab){switchTab(tab.dataset.tab);return;}
+ const btn=e.target.closest('[data-act]');if(!btn)return;
+ const act=btn.dataset.act,t=btn.dataset.t,id=btn.dataset.id;
+ if(act==='add-meas'){state.meas.push(blankMeas(nextNum()));render();toast('Окно добавлено');}
+ else if(act==='add-calc'){state.calc.push(blankCalc(firstNum()));render();toast('Слой штор добавлен');}
+ else if(act==='add-balc'){state.balc.push({id:uid(),windowNum:balcWindow||firstNum(),secNum:state.balc.filter(b=>String(b.windowNum)===String(balcWindow||firstNum())).length+1,secType:'глухая',w:'',h:'',side:'--',note:''});render();toast('Секция добавлена');}
+ else if(act==='add-blind'){state.blind.push(blankBlind(firstNum()));render();toast('Изделие добавлено');}
+ else if(act==='apply-rec'){const b=state.blind.find(x=>x.id===id);if(b){const d=derivedBlind(b);if(d.recW!==null)b.w=d.recW;if(d.recH!==null)b.h=d.recH;const iw=document.querySelector(`[data-t='blind'][data-id='${id}'][data-f='w']`);const ih=document.querySelector(`[data-t='blind'][data-id='${id}'][data-f='h']`);if(iw)iw.value=b.w;if(ih)ih.value=b.h;refresh();toast('Рекомендуемые размеры подставлены');}}
+ else if(act==='add-photo'){photoTarget=id;$('#photoInput').click();}
+ else if(act==='del-photo'){const r=state.meas.find(x=>x.id===id);if(r){r.photo='';r.photoName='';render();toast('Фото удалено');}}
+ else if(act==='dup'){const c=state.calc.find(x=>x.id===id);if(c){state.calc.push(Object.assign({},c,{id:uid()}));render();toast('Строка продублирована — поменяйте тип штор');}}
+ else if(act==='del'){state[t]=state[t].filter(x=>x.id!==id);render();toast('Строка удалена');}
+ else if(act==='autofill'){const c=state.calc.find(x=>x.id===id);if(c){const d=derivedCalc(c);c.hardwareQty=c.mount==='люверсы'?d.grommets:d.tapeM;const inp=document.querySelector(`[data-t='calc'][data-id='${id}'][data-f='hardwareQty']`);if(inp)inp.value=c.hardwareQty;refresh();toast('Количество подставлено из расчёта');}}
+ else if(act==='clear-example'){
+   state.meas=state.meas.filter(r=>!String(r.note||'').includes('ПРИМЕР'));
+   state.calc=state.calc.filter(r=>!String(r.note||'').includes('ПРИМЕР')&&!String(r.article||'').includes('ПРИМЕР'));
+   state.balc=state.balc.filter(r=>!String(r.note||'').includes('ПРИМЕР'));
+   state.blind=state.blind.filter(r=>!String(r.note||'').includes('ПРИМЕР'));
+   state.example=false;
+   if(!state.meas.length)state.meas.push(blankMeas(1));
+   if(!state.calc.length)state.calc.push(blankCalc(firstNum()));
+   balcWindow=firstNum();render();toast('Пример убран — можно вносить свои окна');
+ }
+ else if(act==='reset'){if(!confirm('Сбросить все данные и вернуть исходный пример?'))return;state=normalize(seed());balcWindow='1';try{localStorage.removeItem(STORE);}catch(err){}render();toast('Сброшено');}
+ else if(act==='export-csv')exportCsv();
+ else if(act==='export-json')exportJson();
+ else if(act==='import-json')$('#fileInput').click();
+ else if(act==='download-html')downloadHtml();
+ else if(act==='print')window.print();
+});
+$('#fileInput').addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{const obj=JSON.parse(await f.text());state=normalize(obj);balcWindow=state.meas.length?String(state.meas[0].num):'';render();toast('Проект загружен');}
+ catch(err){toast('Не удалось прочитать JSON');}
+ e.target.value='';
+});
+let photoTarget='';
+function handlePhoto(file){
+ if(!file)return;
+ const r=state.meas.find(x=>x.id===photoTarget);
+ if(!r){toast('Сначала выберите окно');return;}
+ const reader=new FileReader();
+ reader.onload=ev=>{
+  const img=new Image();
+  img.onload=()=>{
+   try{
+    const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(img.width*scale));
+    c.height=Math.max(1,Math.round(img.height*scale));
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    r.photo=c.toDataURL('image/jpeg',0.72);
+    r.photoName=file.name;
+    render();
+    toast('Фото добавлено: '+file.name);
+   }catch(err){toast('Не удалось обработать фото');}
+  };
+  img.onerror=()=>toast('Не удалось прочитать изображение');
+  img.src=ev.target.result;
+ };
+ reader.onerror=()=>toast('Не удалось загрузить файл');
+ reader.readAsDataURL(file);
+}
+$('#photoInput').addEventListener('change',e=>{
+ const f=e.target.files[0];
+ if(f)handlePhoto(f);
+ e.target.value='';
+});
+render();
+</script>
+</body>
+</html>
